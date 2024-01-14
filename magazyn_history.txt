@@ -1,0 +1,2 @@
+Zmieniono saldo o kwotę: 10.00 PLN.
+Zmieniono saldo o kwotę: -555.00 PLN.

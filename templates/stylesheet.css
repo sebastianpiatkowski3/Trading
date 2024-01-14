@@ -1,0 +1,19 @@
+/* styles.css */
+
+body {
+    background-color: #2c3e50; /* Kolor tła dla dark mode */
+    color: #ecf0f1; /* Kolor tekstu dla dark mode */
+    font-family: 'Helvetica', sans-serif; /* Ustawienie czcionki na Helvetica */
+    text-align: justify; /* Wyjustowanie tekstu */
+    margin: 0; /* Usunięcie domyślnych marginesów */
+    padding: 20px; /* Dodanie wewnętrznego marginesu dla treści */
+}
+
+/* Dodatkowe style dla przykładu */
+h1 {
+    color: #3498db; /* Kolor nagłówków */
+}
+
+a {
+    color: #e74c3c; /* Kolor linków */
+}

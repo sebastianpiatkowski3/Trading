@@ -1,0 +1,9 @@
+Laptop:{'cena': 2500, 'ilosc': 5}
+Smartphone:{'cena': 800, 'ilosc': 10}
+Mysz komputerowa:{'cena': 30, 'ilosc': 20}
+Klawiatura:{'cena': 50, 'ilosc': 14}
+Słuchawki:{'cena': 100, 'ilosc': 8}
+Monitor:{'cena': 500, 'ilosc': 11}
+Drukarka:{'cena': 150, 'ilosc': 7}
+Router:{'cena': 80, 'ilosc': 10}
+Kamera:{'cena': 300, 'ilosc': 5}

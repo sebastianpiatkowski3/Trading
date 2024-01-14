@@ -1,0 +1,7 @@
+Zmieniono saldo o kwotę: 333.00 PLN.
+Zmieniono saldo o kwotę: -33.00 PLN.
+Zmieniono saldo o kwotę: 444.00 PLN.
+Zmieniono saldo o kwotę: 999.00 PLN.
+Sprzedaż: Monitor, cena: 500.00 PLN, ilość: 1.
+Sprzedaż: Klawiatura, cena: 50.00 PLN, ilość: 1.
+Zmieniono saldo o kwotę: 6545.00 PLN.
