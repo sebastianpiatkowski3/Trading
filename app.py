@@ -305,7 +305,7 @@ print(f'to jest flask')
 print(warehouse_management.konto())
 @app.route('/')
 def index():
-    return render_template('index2.html', saldo=warehouse_management.konto)
+    return render_template("index2.html", saldo=warehouse_management.konto)
 
 @app.route('/historia')
 def historia():

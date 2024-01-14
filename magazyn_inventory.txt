@@ -1,4 +1,4 @@
-Laptop:{'cena': 2500, 'ilosc': 5}
+Laptop:{'cena': 2500, 'ilosc': 4}
 Smartphone:{'cena': 800, 'ilosc': 10}
 Mysz komputerowa:{'cena': 30, 'ilosc': 20}
 Klawiatura:{'cena': 50, 'ilosc': 14}
