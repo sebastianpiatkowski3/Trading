@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Accountant</title>
+     <link rel="stylesheet" href="static/stylesheet.css">
+</head>
+
+<body>
+
+    <a href="historia" >historia</a>
+    <br>
+
+    <h1>System Accountant</h1>
+        <h2>Strona główna</h2>
+        <br>
+
+<div>
+
+		Aktualny stan magazynowy: <br>
+    <br>
+    <table style="width:100%">
+    <tr>
+        <th style="width:10%">Lp.</th>
+        <th style="width:50%">Nazwa produktu</th>
+        <th style="width:15%">Cena</th>
+        <th style="width:10%">Ilość sztuk</th>
+    </tr>
+    <tr>
+        <td style="text-align:left;">1</td>
+        <td style="text-align:left;">Przykładowy produkt</td>
+        <td style="text-align:left;">100 zł</td>
+        <td style="text-align:left;">10</td>
+    </tr>
+</table>
+
+<br>
+    <br>
+Aktualne saldo: <br> <br>
+
+    <form>
+      <h2>Formularz zakupu</h2>
+	  <label style="width: calc(50% - 10px)" for="productNameBuy">Nazwa produktu:</label>
+	  <label  style="width: calc(15% - 10px)" for="unitPriceBuy">Cena jednostkowa:</label>
+	  <label  style="width: calc(10% - 10px)" for="quantityBuy">Liczba sztuk:</label>
+	  <br>
+
+	  <input   style="width: calc(50% - 10px)" type="text" id="productNameBuy"  required>
+	  <input   style="width: calc(15% - 10px)" type="number" id="unitPriceBuy" required>
+	  <input   style="width: calc(10% - 10px)" type="number" id="quantityBuy" required>
+
+	  <button type="submit">Złóż zanówienie</button>
+    </form>
+
+    <br>
+
+    <form>
+      <h2>Formularz sprzedaży</h2>
+	  <label style="width: calc(50% - 10px)" for="productNameSell">Nazwa produktu:</label>
+	  <label  style="width: calc(15% - 10px)" for="unitPriceSell">Cena jednostkowa:</label>
+	  <label  style="width: calc(10% - 10px)" for="quantitySell">Liczba sztuk:</label>
+	  <br>
+
+	  <input   style="width: calc(50% - 10px)" type="text" id="productNameSell" required >
+	  <input   style="width: calc(15% - 10px)" type="number" id="unitPriceSell" required>
+	  <input   style="width: calc(10% - 10px)" type="number" id="quantitySell" required>
+
+	  <button type="submit">Złóż zanówienie</button>
+    </form>
+
+    <br>
+            <form>
+       <h2>Formularz zmiany salda</h2>
+	  <label style="width: calc(65% - 10px)" for="comment">Komentarz:</label>
+	  <label  style="width: calc(10% - 10px)" for="value">Wartość:</label>
+	  <br>
+
+	  <input   style="width: calc(65% - 10px)" type="text" id="comment" >
+	  <input   style="width: calc(10% - 10px)" type="number" id="value" required>
+
+	  <button type="submit">Zatwierdź zmianę</button>
+       <!--<button style="margin-left: 120px;" type="submit">Zatwierdź zmianę</button>/-->
+    </form>
+
+<br>
+
+</div>
+
+</body>
+</html>
