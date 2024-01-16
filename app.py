@@ -83,7 +83,6 @@ uzytkownicy = {
     'Marcin': 'marcin@example.com'
 }
 
-
 @app.route('/', methods=["GET", "POST"])  # Dodajemy metodę POST aby wysłać formularz
 def index():
     if request.form:  # Sprawdzamy, czy formularz przyszedł (zabezpieczenie przed brakiem formularza na metodzie GET)
@@ -91,13 +90,13 @@ def index():
         haslo = request.form.get("haslo")
         uzytkownicy[email] = haslo
     return render_template('index.html',
-                           stany=magazyn.module_lista(),
-                           history=magazyn.module_przeglad() )
+                           stany=magazyn.module_lista())
 
 
 @app.route('/historia')
 def historia():
-    return render_template('historia.html')
+    return render_template('historia.html',
+                           history=magazyn.module_przeglad())
 
 
 

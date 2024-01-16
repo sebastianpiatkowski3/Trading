@@ -14,19 +14,18 @@
         <h1>System Accountant</h1>
         <h2>Historia operacji</h2>
       <br>
-
       <table style="width:100%">
     <tr>
         <th style="width:10%">Lp.</th>
         <th style="width:90%">Operacja</th>
     </tr>
+                  {% for element in history %}
     <tr>
-        <td style="text-align:left;">1</td>
-        <td style="text-align:left;">Przykładowa operacja</td>
+        <td style="text-align:left;" scope="row"> {{ loop.index }} </td>
+        <td style="text-align:left;"> {{ element}} </td>
     </tr>
+                  {% endfor %}
 </table>
-
-
 
   </body>
 </html>
