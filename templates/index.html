@@ -1,41 +1,50 @@
+{% extends "bootstrap/base.html" %}
+
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Accountant</title>
-     <link rel="stylesheet" href="static/stylesheet.css">
+    {% block head %}
+        <title>Accountant</title>
+        <link rel="stylesheet" href="static/stylesheet.css">
+    {% endblock %}
 </head>
 
 <body>
+    <div class="container">
+        {% block content %}
+
+
 
     <a href="historia" >historia</a>
     <br>
-
     <h1>System Accountant</h1>
         <h2>Strona główna</h2>
-        <br>
 
 <div>
 
-		Aktualny stan magazynowy: <br>
-    <br>
-    <table style="width:100%">
+<h3>Aktualne saldo:</h3>
+<br>
+    <h3>Aktualny stan magazynowy: </h3>
+    <table style="width:80%" align="center">
     <tr>
-        <th style="width:10%">Lp.</th>
+        <th style="width:3%">Lp.</th>
         <th style="width:50%">Nazwa produktu</th>
         <th style="width:15%">Cena</th>
         <th style="width:10%">Ilość sztuk</th>
     </tr>
-    <tr>
-        <td style="text-align:left;">1</td>
-        <td style="text-align:left;">Przykładowy produkt</td>
-        <td style="text-align:left;">100 zł</td>
-        <td style="text-align:left;">10</td>
-    </tr>
+        {% for key, value in stany.items() %}
+        <tr>
+        <td style="text-align:left;" scope="row"> {{ loop.index }}</td>
+        <td style="text-align:left;">{{ key }}</td>
+        <td style="text-align:left;">{{value['cena'] }} zł</td>
+        <td style="text-align:left;">{{ value['ilosc'] }}</td>
+        </tr>
+        {% endfor %}
 </table>
 
-<br>
-    <br>
-Aktualne saldo: <br> <br>
+ <br>
+ <br>
+
 
     <form>
       <h2>Formularz zakupu</h2>
@@ -84,6 +93,7 @@ Aktualne saldo: <br> <br>
 <br>
 
 </div>
+        {% endblock %}
 
 </body>
 </html>

@@ -1,0 +1,136 @@
+:root {
+    --kolor-hover: #464655;
+    --kolor-tla: #2c3e50;
+    --kolor-tekstu: #ecf0f1;
+    --kolor-linkow: #3498db;
+    --kolor-naglowka: #3498db;
+    --kolor-button: #3498db;
+}
+
+body {
+    background-color: var(--kolor-tla);
+    color: var(--kolor-tekstu);
+    font-family: 'Lato';
+    text-align: justify;
+    margin: 0;
+    padding: 20px;
+
+}
+
+form {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px auto;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+form h2 {
+    text-align: justify;
+}
+
+label {
+    margin: 4px 0;
+    display: inline-block;
+}
+
+input, select, button {
+    width: calc(12% - 10px);
+    padding: 7px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    /*border-radius: 4px;*/
+    display: inline-block;
+    color: var(--kolor-tekstu);
+}
+
+input {
+    background-color: var(--kolor-tla);
+    border-left: none; /* Brak krawędzi lewej */
+    border-right: none; /* Brak krawędzi prawej */
+}
+
+input:hover {
+    background-color: var(--kolor-hover);
+}
+
+input:focus {
+    outline: 4px solid #336699;
+}
+
+button {
+    width: calc(15% - 10px);
+    background-color: var(--kolor-button);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 16px;
+}
+
+button:hover {
+    background-color: var(--kolor-hover);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: var(--kolor-linkow);
+}
+
+tr:hover {
+    background-color: #464655;
+}
+
+@media only screen and (max-width: 600px) {
+    table {
+        border: 1px solid #ccc;
+    }
+
+    th, td {
+        padding: 8px;
+        display: block;
+    }
+
+    th {
+        text-align: center;
+    }
+
+    td {
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    tr {
+        text-align: left;
+        margin-bottom: 10px;
+    }
+}
+
+h1, h2 {
+    color: var(--kolor-naglowka);
+    text-align: center;
+}
+
+a {
+    color: var(--kolor-linkow);
+    }
+
