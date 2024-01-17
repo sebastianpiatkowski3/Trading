@@ -22,6 +22,7 @@ Dostępne komendy:
 0 - Koniec
 """
 from flask import flash
+from datetime import datetime
 
 class Magazyn:
     def __init__(self):
@@ -136,6 +137,11 @@ class Magazyn:
                 file.write(f"{key}:{value}\n")
 
     def add_operation(self, operation):
+        # Pobierz bieżącą datę i godzinę
+        aktualna_data_i_godzina = datetime.now()
+        # Sformatuj datę i godzinę jako string
+        formatted_data_i_godzina = aktualna_data_i_godzina.strftime("%Y-%m-%d %H:%M:%S")
+        operation =  formatted_data_i_godzina + ": " +  operation
         self.history.append(operation)
 
     def display_operations(self, start_index, end_index):
@@ -145,35 +151,6 @@ class Magazyn:
             else:
                 print(f"Indeks {i + 1} poza zakresem historii.")
 
-    def run(self):
-        while True:
-            print(dostepne_komendy)
-            komenda = input("Podaj numer komendy: ")
-
-            if komenda == "1":
-                self.module_saldo()
-            elif komenda == "2":
-                self.module_sprzedaz()
-            elif komenda == "3":
-                self.module_zakup()
-            elif komenda == "4":
-                self.module_konto()
-            elif komenda == "5":
-                self.module_lista()
-            elif komenda == "6":
-                self.module_magazyn()
-            elif komenda == "7":
-                self.module_przeglad()
-            elif komenda == "9":
-                self.save_balance()
-                self.save_history()
-                self.save_inventory()
-            elif komenda == "0":
-                self.save_balance()
-                self.save_history()
-                self.save_inventory()
-                print("Koniec działania programu")
-                break
 
     def module_saldo(self):
         print("Moduł saldo")

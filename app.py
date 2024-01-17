@@ -64,7 +64,7 @@ magazyn.load_data()
 
 @app.route('/')
 def index():
-     return render_template('index.html', konto=magazyn.module_konto(), stany=magazyn.module_lista())
+     return render_template('index.html', konto=magazyn.saldo, stany=magazyn.inventory)
 
 
 @app.route('/zakup', methods=["GET", "POST"])
@@ -87,13 +87,15 @@ def zakup():
                 flash("Nie dodano do magazynu.")
                 flash("*" * 35)
             else:
-                ilosc += magazyn.inventory[nazwa]['ilosc']
-                magazyn.inventory[nazwa] = {'cena': cena, 'ilosc': ilosc}
+                if nazwa in magazyn.inventory:
+                    ilosc += magazyn.inventory[nazwa]['ilosc']
+                else:
+                    magazyn.inventory[nazwa] = {'cena': cena, 'ilosc': ilosc}
                 tekst = f"Zakup: {nazwa}, cena: {cena:.2f} PLN, ilość: {ilosc}."
                 magazyn.add_operation(tekst)
                 magazyn.saldo = magazyn.saldo - (cena * ilosc)
                 flash(f"Nowy towar '{nazwa}' został dodany do magazynu.")
-    return render_template('zakup.html', konto=magazyn.module_konto())
+    return render_template('zakup.html', konto=magazyn.saldo)
 
 
 @app.route('/sprzedaz', methods = ["GET", "POST"])
