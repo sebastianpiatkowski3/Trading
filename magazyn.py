@@ -21,7 +21,7 @@ Dostępne komendy:
 9 - Zapisz
 0 - Koniec
 """
-
+from flask import flash
 
 class Magazyn:
     def __init__(self):
@@ -42,6 +42,11 @@ class Magazyn:
         self.load_balance()
         self.load_history()
         self.load_inventory()
+
+    def save_data(self):
+        self.save_balance()
+        self.save_history()
+        self. save_inventory()
 
     def load_balance(self):
         try:
@@ -130,8 +135,8 @@ class Magazyn:
             for key, value in self.inventory.items():
                 file.write(f"{key}:{value}\n")
 
-    def add_operation(self, operation, var1):
-        self.history.append(operation + " " + var1)
+    def add_operation(self, operation):
+        self.history.append(operation)
 
     def display_operations(self, start_index, end_index):
         for i in range(start_index, end_index + 1):
@@ -182,28 +187,25 @@ class Magazyn:
             except ValueError:
                 print("Błąd! Wprowadź prawidłową kwotę.")
 
-    def module_sprzedaz(self):
-        print("Moduł sprzedaż")
-        nazwa = input("Podaj nazwę towaru: ")
+    def module_sprzedaz(self, nazwa, ilosc_input):
+        flash(f"Sprzedano: {nazwa}, {ilosc_input} szt.")  # Dodajemy wiadomość do wyświetlenia na ekranie
         if not nazwa in self.inventory:
-            print(f"Towar o nazwie '{nazwa}' nie istnieje w magazynie.")
+           flash(f"Towar o nazwie '{nazwa}' nie istnieje w magazynie.")
         else:
-            ilosc_input = input("Podaj ilość sztuk: ")
+            # ilosc_input = input("Podaj ilość sztuk: ")
             ilosc_sprzedaz = int(ilosc_input)
             if ilosc_sprzedaz > 0:
                 stan_magazynowy = self.inventory[nazwa]['ilosc']
                 if stan_magazynowy < ilosc_sprzedaz:
-                    print("*" * 35)
-                    print("Za mały stan magazynowy.")
-                    print(f"Możesz sprzedać max.: {stan_magazynowy} szt.")
-                    print("*" * 35)
+                    flash("Za mały stan magazynowy. Możesz sprzedać max.: {stan_magazynowy} szt.")
                 else:
                     stan_magazynowy -= ilosc_sprzedaz
                     self.inventory[nazwa]['ilosc'] = stan_magazynowy
                     self.saldo += (ilosc_sprzedaz * self.inventory[nazwa]['cena'])
-                    self.add_operation("Sprzedaż:", f"{nazwa}, cena: {self.inventory[nazwa]['cena']:.2f} PLN, ilość: {ilosc_sprzedaz}.")
+                    tekst = "Sprzedaż:", f"{nazwa}, cena: {self.inventory[nazwa]['cena']:.2f} PLN, ilość: {ilosc_sprzedaz}."
+                    self.add_operation(tekst)
             else:
-                print("Podano ujemną ilość do sprzedaży.")
+                flash("Podano ujemną ilość do sprzedaży.")
 
     def module_zakup(self):
         print("Moduł zakup")
@@ -231,7 +233,8 @@ class Magazyn:
                 print(f"Nowy towar '{nazwa}' został dodany do magazynu.")
 
     def module_konto(self):
-        print(f"Stan konta: {self.saldo:.2f} PLN")
+        tekst = "{:,.2f}".format(self.saldo).replace(",", " ").replace(".", ",")
+        return tekst
 
     def module_lista(self):
         print("Aktualny stan magazynu:")

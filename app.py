@@ -21,20 +21,20 @@ Jeśli podano parametry, powinna wyświetlać dane z danego zakresu.
 
 Zapewnij przyjazny dla użytkownika interfejs, stosując style CSS.
 '''
-
-
-from flask import Flask, render_template, request
-from flask_bootstrap import Bootstrap
+import atexit
+from flask import Flask, render_template, request, flash, redirect
 from magazyn import Magazyn
 
 app = Flask(__name__)
 
-pp = Flask(__name__)
-bootstrap = Bootstrap(app)
+app.config["SECRET_KEY"] = "Tajny klucz"  # Klucz prywatny aplikacji dla celów m.in. bezpieczeństwa
 
-appHasRunBefore: bool = False  # w celu wykonania fragmentu kodu tylko raz w całym cyklu życia tego programu.
+
+uzytkownicy = {}
+rejestr = []
 
 magazyn = Magazyn()
+magazyn.load_data()
 """
      Metody klasy Magazyn:
              == "1":
@@ -60,45 +60,94 @@ magazyn = Magazyn()
                 self.save_history()
                 self.save_inventory()
 """
-@app.before_request
-def firstRun():
-    global appHasRunBefore
-    if not appHasRunBefore:
-        appHasRunBefore = True
-        print("Ten kod zostanie wykonany tylko raz w całym cyklu życia tego programu.")
-        magazyn.load_data()
 
 
-uzytkownicy = {
-    'Anna': 'anna@example.com',
-    'Kuba':'kjh@kjhk.pl',
-    'Jan': 'jan@example.com',
-    'Katarzyna': 'katarzyna@example.com',
-    'Piotr': 'piotr@example.com',
-    'Magdalena': 'magdalena@example.com',
-    'Tomasz': 'tomasz@example.com',
-    'Aleksandra': 'aleksandra@example.com',
-    'Krzysztof': 'krzysztof@example.com',
-    'Ewa': 'ewa@example.com',
-    'Marcin': 'marcin@example.com'
-}
-
-@app.route('/', methods=["GET", "POST"])  # Dodajemy metodę POST aby wysłać formularz
+@app.route('/')
 def index():
-    if request.form:  # Sprawdzamy, czy formularz przyszedł (zabezpieczenie przed brakiem formularza na metodzie GET)
-        email = request.form.get("email")  # Wyciągamy pole "email" z formularza
-        haslo = request.form.get("haslo")
-        uzytkownicy[email] = haslo
-    return render_template('index.html',
-                           stany=magazyn.module_lista())
+     return render_template('index.html', konto=magazyn.module_konto(), stany=magazyn.module_lista())
 
+
+@app.route('/zakup', methods=["GET", "POST"])
+def zakup():
+    if request.form:
+        nazwa = request.form.get("productNameBuy")
+        if nazwa in magazyn.inventory:
+            flash(f"Towar o nazwie '{nazwa}' już istnieje w magazynie.")
+        cena_input = request.form.get("unitPriceBuy")
+        cena = float(cena_input)
+        if cena < 0:
+            flash("Uwaga: cena zakupu mniejsza od 0.")
+        else:
+            ilosc_input = request.form.get("quantityBuy")
+            ilosc = int(ilosc_input)
+            if ilosc < 0:
+                flash("Podano ilość mniejszą od 0.")
+            elif cena * ilosc > magazyn.saldo:
+                flash("Za mały stan konta. Dodaj środki.")
+                flash("Nie dodano do magazynu.")
+                flash("*" * 35)
+            else:
+                magazyn.inventory[nazwa] = {'cena': cena, 'ilosc': ilosc}
+                tekst = f"Zakup: {nazwa}, cena: {cena:.2f} PLN, ilość: {ilosc}."
+                magazyn.add_operation(tekst)
+                magazyn.saldo = magazyn.saldo - (cena * ilosc)
+                flash(f"Nowy towar '{nazwa}' został dodany do magazynu.")
+    return render_template('zakup.html', konto=magazyn.module_konto())
+
+
+@app.route('/sprzedaz', methods = ["GET", "POST"])
+def sprzedaz():
+    if request.form:  # Sprawdzamy, czy formularz przyszedł (zabezpieczenie przed brakiem formularza na metodzie GET)
+        productNameSell = request.form.get("productNameSell")  # Wyciągamy pole "productNameSell" z formularza
+        unitPriceSell = request.form.get("unitPriceSell")
+        quantitySell = request.form.get("quantitySell")
+        if not productNameSell in magazyn.inventory:
+            flash(f"Towar o nazwie '{productNameSell}' nie istnieje w magazynie.")
+        else:
+            ilosc_sprzedaz = int(quantitySell)
+            if ilosc_sprzedaz > 0:
+                stan_magazynowy = magazyn.inventory[productNameSell]['ilosc']
+                if stan_magazynowy < ilosc_sprzedaz:
+                    flash(f"Za mały stan magazynowy. Możesz sprzedać max.: {stan_magazynowy} szt.")
+                else:
+                    stan_magazynowy -= ilosc_sprzedaz
+                    magazyn.inventory[productNameSell]['ilosc'] = stan_magazynowy
+                    magazyn.saldo += (ilosc_sprzedaz * magazyn.inventory[productNameSell]['cena'])
+                    tekst = "Sprzedaż:", f"{productNameSell}, cena: {magazyn.inventory[productNameSell]['cena']:.2f} PLN, ilość: {ilosc_sprzedaz}."
+                    magazyn.add_operation(tekst)
+                    flash(f"Sprzedano: {productNameSell}, {quantitySell} szt. w cenie: {unitPriceSell}")
+            else:
+                flash("Podano ujemną ilość do sprzedaży.")
+        tekst = f"Sprzedaż: {productNameSell}, cena: {unitPriceSell}, ilość: {quantitySell} szt."
+        magazyn.add_operation(tekst)
+        # return redirect("/")  # Przekierowuje do konkretnego widoku wykonując kod z przypisanej funkcji
+    return render_template('sprzedaz.html')
+
+
+@app.route('/saldo', methods = ["GET", "POST"])
+def saldo():
+    if request.form:
+        while True:
+            try:
+                comment =request.form.get("comment")
+                input_kwota = request.form.get("value")
+                kwota = float(input_kwota)
+                magazyn.saldo += kwota
+                tekst = comment + f" - Zmieniono saldo o kwotę: {kwota:.2F} PLN"
+                magazyn.add_operation(tekst)
+                break
+            except ValueError:
+                flash("Błąd! Wprowadź prawidłową kwotę.")
+    return render_template('saldo.html',
+                           konto=magazyn.module_konto())
 
 @app.route('/historia')
 def historia():
     return render_template('historia.html',
                            history=magazyn.module_przeglad())
 
+def zapisanie_danych_do_plikow():
+    magazyn.save_data()
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+atexit.register(zapisanie_danych_do_plikow)

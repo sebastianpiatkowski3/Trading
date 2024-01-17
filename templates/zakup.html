@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+        <title>Accountant</title>
+        <link rel="stylesheet" href="static/stylesheet.css">
+
+</head>
+
+<body>
+
+{% for message in get_flashed_messages() %}
+    <div>{{ message }}</div>
+{% endfor %}
+
+    <a href="/" >Strona główna</a>
+    <a href="zakup" >Zakup</a>
+    <a href="sprzedaz" >Sprzedaż</a>
+    <a href="saldo" >Saldo</a>
+    <a href="historia" >Historia</a>
+    <br>
+    <h1>System Accountant</h1>
+
+<div>
+
+<h3>Aktualne saldo:  {{ konto }} PLN</h3>
+ <br>
+
+<form action="/zakup" method="POST">
+      <h2>Formularz zakupu</h2>
+	  <label style="width: calc(50% - 10px)" >Nazwa produktu:</label>
+	  <label  style="width: calc(15% - 10px)" >Cena jednostkowa:</label>
+	  <label  style="width: calc(10% - 10px)" >Liczba sztuk:</label>
+	  <br>
+
+	  <input   style="width: calc(50% - 10px)" type="text" name="productNameBuy"  required>
+	  <input   style="width: calc(15% - 10px)" type="number" name="unitPriceBuy" required>
+	  <input   style="width: calc(10% - 10px)" type="number" name="quantityBuy" required>
+
+	  <button type="submit">Zatwierdź</button>
+    </form>
+<br>
+
+</div>
+
+</body>
+</html>
