@@ -8,3 +8,6 @@ Drukarka:{'cena': 150, 'ilosc': 7}
 Router:{'cena': 80, 'ilosc': 10}
 Kamera:{'cena': 300, 'ilosc': 5}
 Lampka LED do monitora:{'cena': 189.0, 'ilosc': 10}
+Krzesło:{'cena': 199.0, 'ilosc': 1}
+Biurko:{'cena': '599.00', 'ilosc': 1}
+Zestaw:{'cena': '1000.00', 'ilosc': 6}

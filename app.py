@@ -64,7 +64,7 @@ magazyn.load_data()
 
 @app.route('/')
 def index():
-     return render_template('index.html', konto=magazyn.saldo, stany=magazyn.inventory)
+     return render_template('index.html', konto=magazyn.module_konto(), stany=magazyn.inventory)
 
 
 @app.route('/zakup', methods=["GET", "POST"])
@@ -90,12 +90,14 @@ def zakup():
                 if nazwa in magazyn.inventory:
                     ilosc += magazyn.inventory[nazwa]['ilosc']
                 else:
-                    magazyn.inventory[nazwa] = {'cena': cena, 'ilosc': ilosc}
+                    magazyn.saldo = magazyn.saldo - (cena * ilosc)
+                    magazyn.inventory[nazwa] = {'cena': f"{cena:.2f}", 'ilosc': ilosc}
                 tekst = f"Zakup: {nazwa}, cena: {cena:.2f} PLN, ilość: {ilosc}."
                 magazyn.add_operation(tekst)
-                magazyn.saldo = magazyn.saldo - (cena * ilosc)
+
+                magazyn.save_data()
                 flash(f"Nowy towar '{nazwa}' został dodany do magazynu.")
-    return render_template('zakup.html', konto=magazyn.saldo)
+    return render_template('zakup.html', konto=magazyn.module_konto())
 
 
 @app.route('/sprzedaz', methods = ["GET", "POST"])
@@ -117,6 +119,7 @@ def sprzedaz():
                     magazyn.saldo += (ilosc_sprzedaz * magazyn.inventory[productNameSell]['cena'])
                     tekst = f"Sprzedaż: {productNameSell}, ilość: {ilosc_sprzedaz} szt."
                     magazyn.add_operation(tekst)
+                    magazyn.save_data()
                     flash(f"Sprzedano: {productNameSell}, {quantitySell} szt.")
             else:
                 flash("Podano ujemną ilość do sprzedaży.")
@@ -134,6 +137,7 @@ def saldo():
                 magazyn.saldo += kwota
                 tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN"
                 magazyn.add_operation(tekst)
+                magazyn.save_data()
                 break
             except ValueError:
                 flash("Błąd! Wprowadź prawidłową kwotę.")
@@ -149,4 +153,4 @@ def zapisanie_danych_do_plikow():
     magazyn.save_data()
 
 
-atexit.register(zapisanie_danych_do_plikow)
+# atexit.register(zapisanie_danych_do_plikow)
