@@ -3,7 +3,7 @@ Zmieniono saldo o kwotę: -555.00 PLN.
 Zmieniono saldo o kwotę: 0.00 PLN.
 Sprzedaż: Laptop, cena: 2500.00 PLN, ilość: 1.
 testy  Zmieniono saldo o kwotę:, 3545.00 PLN
-Zakup: Lampka LED do manitora, cena: 189.00 PLN, ilość: 10.
+Zakup: Lampka LED do monitora, cena: 189.00 PLN, ilość: 10.
 na inwestycje Zmieniono saldo o kwotę:, 3000.00 PLN
 korekta Zmieniono saldo o kwotę: -3000.00 PLN
 na inwestycje Zmieniono saldo o kwotę: -3000.00 PLN

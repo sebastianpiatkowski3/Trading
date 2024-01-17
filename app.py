@@ -87,6 +87,7 @@ def zakup():
                 flash("Nie dodano do magazynu.")
                 flash("*" * 35)
             else:
+                ilosc += magazyn.inventory[nazwa]['ilosc']
                 magazyn.inventory[nazwa] = {'cena': cena, 'ilosc': ilosc}
                 tekst = f"Zakup: {nazwa}, cena: {cena:.2f} PLN, ilość: {ilosc}."
                 magazyn.add_operation(tekst)
@@ -97,9 +98,8 @@ def zakup():
 
 @app.route('/sprzedaz', methods = ["GET", "POST"])
 def sprzedaz():
-    if request.form:  # Sprawdzamy, czy formularz przyszedł (zabezpieczenie przed brakiem formularza na metodzie GET)
-        productNameSell = request.form.get("productNameSell")  # Wyciągamy pole "productNameSell" z formularza
-        unitPriceSell = request.form.get("unitPriceSell")
+    if request.form:
+        productNameSell = request.form.get("productNameSell")
         quantitySell = request.form.get("quantitySell")
         if not productNameSell in magazyn.inventory:
             flash(f"Towar o nazwie '{productNameSell}' nie istnieje w magazynie.")
@@ -113,13 +113,11 @@ def sprzedaz():
                     stan_magazynowy -= ilosc_sprzedaz
                     magazyn.inventory[productNameSell]['ilosc'] = stan_magazynowy
                     magazyn.saldo += (ilosc_sprzedaz * magazyn.inventory[productNameSell]['cena'])
-                    tekst = "Sprzedaż:", f"{productNameSell}, cena: {magazyn.inventory[productNameSell]['cena']:.2f} PLN, ilość: {ilosc_sprzedaz}."
+                    tekst = f"Sprzedaż: {productNameSell}, ilość: {ilosc_sprzedaz} szt."
                     magazyn.add_operation(tekst)
-                    flash(f"Sprzedano: {productNameSell}, {quantitySell} szt. w cenie: {unitPriceSell}")
+                    flash(f"Sprzedano: {productNameSell}, {quantitySell} szt.")
             else:
                 flash("Podano ujemną ilość do sprzedaży.")
-        tekst = f"Sprzedaż: {productNameSell}, cena: {unitPriceSell}, ilość: {quantitySell} szt."
-        magazyn.add_operation(tekst)
         # return redirect("/")  # Przekierowuje do konkretnego widoku wykonując kod z przypisanej funkcji
     return render_template('sprzedaz.html')
 
@@ -129,11 +127,10 @@ def saldo():
     if request.form:
         while True:
             try:
-                comment =request.form.get("comment")
                 input_kwota = request.form.get("value")
                 kwota = float(input_kwota)
                 magazyn.saldo += kwota
-                tekst = comment + f" - Zmieniono saldo o kwotę: {kwota:.2F} PLN"
+                tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN"
                 magazyn.add_operation(tekst)
                 break
             except ValueError:

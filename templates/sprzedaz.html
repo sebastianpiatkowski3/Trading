@@ -27,12 +27,10 @@
 <form action="/sprzedaz" method="POST">  {# Tworzymy formularz, który przy wysłaniu strzela do endpointu /formularz z metodą POST i danymi z formularza #}
       <h2>Formularz sprzedaży</h2>
 	  <label style="width: calc(50% - 10px)" >Nazwa produktu:</label>
-	  <label  style="width: calc(15% - 10px)">Cena jednostkowa:</label>
 	  <label  style="width: calc(10% - 10px)" >Liczba sztuk:</label>
 	  <br>
 
 	  <input   style="width: calc(50% - 10px)" type="text" name="productNameSell" required >
-	  <input   style="width: calc(15% - 10px)" type="number" name="unitPriceSell" required>
 	  <input   style="width: calc(10% - 10px)" type="number" name="quantitySell" required>
 	  <button type="submit">Zatwierdź</button>
     </form>
