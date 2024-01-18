@@ -1,7 +1,7 @@
-Laptop:{'cena': 2500, 'ilosc': 4}
+Laptop:{'cena': 2500, 'ilosc': 2}
 Smartphone:{'cena': 800, 'ilosc': 10}
 Mysz komputerowa:{'cena': 30, 'ilosc': 20}
-Klawiatura:{'cena': 50, 'ilosc': 14}
+Klawiatura:{'cena': 50, 'ilosc': 13}
 Słuchawki:{'cena': 100, 'ilosc': 8}
 Monitor:{'cena': 500, 'ilosc': 11}
 Drukarka:{'cena': 150, 'ilosc': 7}
@@ -11,3 +11,4 @@ Lampka LED do monitora:{'cena': 189.0, 'ilosc': 10}
 Krzesło:{'cena': 199.0, 'ilosc': 1}
 Biurko:{'cena': '599.00', 'ilosc': 1}
 Zestaw:{'cena': '1000.00', 'ilosc': 6}
+Kurs Python Developer:{'cena': '8000.00', 'ilosc': 1}

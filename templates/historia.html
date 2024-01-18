@@ -1,27 +1,14 @@
-<!doctype html>
-<html lang="en" data-bs-theme="dark">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Historia</title>
-    <link rel="stylesheet" href="static/stylesheet.css">
-  </head>
-  <body>
+{% extends "base.html" %}
 
-    <a href="/" >Strona główna</a>
-   <a href="zakup" >Zakup</a>
-    <a href="sprzedaz" >Sprzedaż</a>
-    <a href="saldo" >Saldo</a>
-    <a href="historia" >Historia</a>
-        <br>
+{% block title %} Accountant {% endblock %}
 
-        <h1>System Accountant</h1>
+{% block content %}
         <h2>Historia operacji</h2>
       <br>
       <table style="width:100%">
     <tr>
-        <th style="width:10%">Lp.</th>
-        <th style="width:90%">Operacja</th>
+        <th style="width:5%">Lp.</th>
+        <th style="width:95%">Operacja</th>
     </tr>
                   {% for element in history %}
     <tr>
@@ -30,6 +17,4 @@
     </tr>
                   {% endfor %}
 </table>
-
-  </body>
-</html>
+{% endblock %}

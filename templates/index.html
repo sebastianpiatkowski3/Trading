@@ -1,26 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "base.html" %}
 
-        <title>Accountant</title>
-        <link rel="stylesheet" href="static/stylesheet.css">
+{% block title %} Accountant {% endblock %}
 
-</head>
-
-<body>
-
-
-    <a href="/" >Strona główna   </a>
-   <a href="zakup" >Zakup   </a>
-    <a href="sprzedaz" >Sprzedaż   </a>
-    <a href="saldo" >Saldo   </a>
-    <a href="historia" >Historia</a>
-    <br>
-    <h1>System Accountant</h1>
-        <h2>Strona główna</h2>
-
-<div>
-
+{% block content %}
+<div class="container">
 <h3>Aktualne saldo:  {{ konto }} PLN</h3>
 <br>
     <h3>Aktualny stan magazynowy: </h3>
@@ -31,7 +14,8 @@
         <th style="width:15%">Cena</th>
         <th style="width:10%">Ilość sztuk</th>
     </tr>
-        {% for key, value in stany.items() %}
+        {% set sorted_stany = stany.items() | sort(attribute='0') %}
+        {% for key, value in sorted_stany %}
         <tr>
         <td style="text-align:left;" scope="row"> {{ loop.index }}</td>
         <td style="text-align:left;">{{ key }}</td>
@@ -40,10 +24,6 @@
         </tr>
         {% endfor %}
 </table>
-
 <br>
-
 </div>
-
-</body>
-</html>
+{% endblock %}

@@ -1,31 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "base.html" %}
 
-        <title>Accountant</title>
-        <link rel="stylesheet" href="static/stylesheet.css">
+{% block title %} Accountant {% endblock %}
 
-</head>
-
-<body>
-
-{% for message in get_flashed_messages() %}
-    <div>{{ message }}</div>
-{% endfor %}
-
-    <a href="/" >Strona główna</a>
-    <a href="zakup" >Zakup</a>
-    <a href="sprzedaz" >Sprzedaż</a>
-    <a href="saldo" >Saldo</a>
-    <a href="historia" >Historia</a>
-    <br>
-    <h1>System Accountant</h1>
-
-<div>
-
+{% block content %}
 <h3>Aktualne saldo:  {{ konto }} PLN</h3>
  <br>
-
 <form action="/zakup" method="POST">
       <h2>Formularz zakupu</h2>
 	  <label style="width: calc(50% - 10px)" >Nazwa produktu:</label>
@@ -37,11 +16,6 @@
 	  <input   style="width: calc(15% - 10px)" type="number" name="unitPriceBuy" required>
 	  <input   style="width: calc(10% - 10px)" type="number" name="quantityBuy" required>
 
-	  <button type="submit">Zatwierdź</button>
+	  <button type="submit"  class="btn btn-primary">Zatwierdź</button>
     </form>
-<br>
-
-</div>
-
-</body>
-</html>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %} Accountant {% endblock %}
+
+{% block content %}
+
+    <header>
+        <h3>O programie: System Accountant</h3>
+    </header>
+    <main>
+        <section
+            <p>Program wykonany jako: "Projekty strony głównej i podstron dla systemu accountant" w ramach kursu 'Python developer' prowadzonego przez Future Collars.</p>
+            <h4>Treść zadania:</h4>
+            <p>Bazując na aplikacji do zarządzania firmą, stwórz jej webowy odpowiednik.</p>
+            <p>Na stronie głównej wyświetl informację na temat stanu konta, magazynu oraz trzy formularze: zakup, sprzedaż, zmiana salda.</p>
+            <p>Formularz zakupu powinien zawierać trzy pola: nazwa produktu, cena i ilość<br>
+            Formularz sprzedaży powinien zawierać dwa pola: nazwa produktu i ilość<br>
+            Formularz zmiany salda powinien zawierać jedno pole: wartość zmiany salda</p>
+            <p>Dodatkowo utwórz drugą podstronę zawierającą historię wykonanych operacji. Podstrona powinna być dostępna pod URL "/historia/" oraz "/historia/&lt;start&gt;/&lt;koniec&gt;"</p>
+            <p>W przypadku "/historia/" na stronie ma się pojawić cała dostępna historia.<br>
+            W przypadku "/historia/&lt;start&gt;/&lt;koniec&gt;" zależnie od podanych wartości w &lt;start&gt; i &lt;koniec&gt;, mają się pojawić wskazane linie, np. od 3 do 12. W przypadku podania złego (lub nieistniejącego zakresu indeksów), program poinformuje o tym użytkownika i wyświetli możliwy do wybrania zakres historii.<br>
+            Zadanie wciąż powinno korzystać z plików do przechowywania stanu konta, magazynu i historii.</p>
+        </section>
+    </main>
+    <footer>
+        <p>Autor: Sebastian Piątkowski</p>
+        <p>Email: <a href="mailto:sebastianpiatkowski32@gmail.com">sebastianpiatkowski32@gmail.com</a></p>
+        <p>Github: <a href="https://github.com/sebastianpiatkowski3/Zadania_Future_Collars">System Accountant</a></p>
+    </footer>
+
+{% endblock %}}

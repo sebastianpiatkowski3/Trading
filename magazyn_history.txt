@@ -12,3 +12,9 @@ test - Zmieniono saldo o kwotę: 0.00 PLN
 2024-01-17 23:27:28: Zakup: Biurko, cena: 599.00 PLN, ilość: 1.
 2024-01-17 23:28:01: Zakup: Zestaw, cena: 1000.00 PLN, ilość: 6.
 2024-01-17 23:28:19: Zmieniono saldo o kwotę: 19999.00 PLN
+2024-01-18 09:54:56: Zmieniono saldo o kwotę: -2000.00 PLN
+2024-01-18 09:56:09: Zakup: Kurs Python Developer, cena: 8000.00 PLN, ilość: 1.
+2024-01-18 09:56:35: Zmieniono saldo o kwotę: 39999.00 PLN
+2024-01-18 10:33:34: Sprzedaż: Laptop, ilość: 1 szt.
+2024-01-18 10:35:45: Sprzedaż: Laptop, ilość: 1 szt.
+2024-01-18 10:48:58: Sprzedaż: Klawiatura, ilość: 1 szt.

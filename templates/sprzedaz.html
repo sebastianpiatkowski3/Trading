@@ -1,41 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "base.html" %}
 
-        <title>Accountant</title>
-        <link rel="stylesheet" href="static/stylesheet.css">
+{% block title %} Accountant {% endblock %}
 
-</head>
-
-<body>
-
-{% for message in get_flashed_messages() %}
-    <div>{{ message }}</div>
-{% endfor %}
-
-    <a href="/" >Strona główna</a>
-   <a href="zakup" >Zakup</a>
-    <a href="sprzedaz" >Sprzedaż</a>
-    <a href="saldo" >Saldo</a>
-    <a href="historia" >Historia</a>
+{% block content %}
+<h3>Aktualne saldo:  {{ konto }} PLN</h3>
+ <br>
+<form action="/sprzedaz" method="POST">
+    <h2>Formularz sprzedaży</h2>
+    <label style="width: calc(50% - 10px)">Nazwa produktu:</label>
+    <label style="width: calc(10% - 10px)">Liczba sztuk:</label>
     <br>
-    <h1>System Accountant</h1>
-
-<div>
- <br>
- <br>
-<form action="/sprzedaz" method="POST">  {# Tworzymy formularz, który przy wysłaniu strzela do endpointu /formularz z metodą POST i danymi z formularza #}
-      <h2>Formularz sprzedaży</h2>
-	  <label style="width: calc(50% - 10px)" >Nazwa produktu:</label>
-	  <label  style="width: calc(10% - 10px)" >Liczba sztuk:</label>
-	  <br>
-
-	  <input   style="width: calc(50% - 10px)" type="text" name="productNameSell" required >
-	  <input   style="width: calc(10% - 10px)" type="number" name="quantitySell" required>
-	  <button type="submit">Zatwierdź</button>
-    </form>
-
-</div>
-
-</body>
-</html>
+    <input list="productNames" style="width: calc(50% - 10px)" type="text" name="productNameSell">
+    <datalist id="productNames">
+        {% for item_key in magazyn.keys() |sort %}
+            <option value="{{ item_key }}">
+        {% endfor %}
+    </datalist>
+    <input style="width: calc(10% - 10px)" type="number" name="quantitySell" required>
+    <br>
+    <button type="submit" class="btn btn-primary">Zatwierdź</button>
+</form>
+<script>
+    function checkIfCustom(selectElement) {
+        var customInput = document.getElementById("customProductName");
+        customInput.style.display = (selectElement.value === "custom") ? "inline" : "none";
+    }
+</script>
+{% endblock %}

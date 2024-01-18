@@ -1,4 +1,4 @@
-'''
+"""
 Projekty strony głównej i podstron dla systemu accountant
 
 Zadanie polega na zaprojektowaniu strony głównej dla aplikacji do zarządzania magazynem i księgowością oraz podstrony "Historia".
@@ -20,7 +20,8 @@ Jeśli podano parametry, powinna wyświetlać dane z danego zakresu.
 3.CSS
 
 Zapewnij przyjazny dla użytkownika interfejs, stosując style CSS.
-'''
+"""
+
 import atexit
 from flask import Flask, render_template, request, flash, redirect
 from magazyn import Magazyn
@@ -124,7 +125,7 @@ def sprzedaz():
             else:
                 flash("Podano ujemną ilość do sprzedaży.")
         # return redirect("/")  # Przekierowuje do konkretnego widoku wykonując kod z przypisanej funkcji
-    return render_template('sprzedaz.html')
+    return render_template('sprzedaz.html', magazyn=magazyn.inventory)
 
 
 @app.route('/saldo', methods = ["GET", "POST"])
@@ -146,8 +147,42 @@ def saldo():
 
 @app.route('/historia')
 def historia():
+    return render_template('historia.html', history=magazyn.module_przeglad())
+
+@app.route('/historia/<int:historia_from>/<int:historia_to>')
+def historia_from_to(historia_from, historia_to):
+    historia_to_show = []
+    if len(magazyn.history) == 0:
+        flash("Brak operacji w historii.")
+    elif historia_from > 0:
+        od = historia_from - 1
+        do = historia_to
+        # Sprawdzanie i obsługa pustych wartości
+        if not od:
+            od = 0
+        else:
+            od = int(od)
+        if not do:
+            do = len(magazyn.history)
+        else:
+            do = int(do)
+        # Sprawdzanie zakresu
+        if od < 0 or do > len(magazyn.history) or od > do:
+            flash(f"Błędny zakres. Dostępne indeksy od 1 do {len(magazyn.history)}")
+            flash("Użyj notacji: /historia/<start>/<koniec>")
+        else:
+            # Wyświetlanie akcji w wybranym zakresie
+            for i in range(od, do):
+                if 0 <= i < len(magazyn.history):
+                    historia_to_show.append(magazyn.history[i])
+                else:
+                    print(f"Indeks {i + 1} poza zakresem historii.")
     return render_template('historia.html',
-                           history=magazyn.module_przeglad())
+                           history=historia_to_show)
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 def zapisanie_danych_do_plikow():
     magazyn.save_data()
