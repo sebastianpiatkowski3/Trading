@@ -12,8 +12,8 @@
     <br>
     <input list="productNames" style="width: calc(50% - 10px)" type="text" name="productNameSell">
     <datalist id="productNames">
-        {% for item_key in magazyn.keys() |sort %}
-            <option value="{{ item_key }}">
+        {% for produkt in magazyn_sql %}
+            <option value="{{ produkt.product }}">
         {% endfor %}
     </datalist>
     <input style="width: calc(10% - 10px)" type="number" name="quantitySell" required>

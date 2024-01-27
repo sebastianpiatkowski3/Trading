@@ -141,7 +141,7 @@ class Magazyn:
         aktualna_data_i_godzina = datetime.now()
         # Sformatuj datę i godzinę jako string
         formatted_data_i_godzina = aktualna_data_i_godzina.strftime("%Y-%m-%d %H:%M:%S")
-        operation =  formatted_data_i_godzina + ": " +  operation
+        operation =  formatted_data_i_godzina + ": " +  operation  # do opisu operacji dodaję bieżącą datę i godzinę
         self.history.append(operation)
 
     def display_operations(self, start_index, end_index):

@@ -6,6 +6,24 @@
 <div class="container">
 <h3>Aktualne saldo:  {{ konto }} PLN</h3>
 <br>
+        <h3>Aktualny stan magazynowy: </h3>
+    <table  style="width:80%" align="center">
+        <tr>
+            <th style="width:3%">Lp.</th>
+            <th style="width:50%">Nazwa Produktu</th>
+            <th style="width:15%">Cena</th>
+            <th style="width:10%">Ilość</th>
+        </tr>
+        {% for produkt in magazyn %}
+        <tr>
+            <td>{{ produkt.id }}</td>
+            <td>{{ produkt.product }}</td>
+            <td>{{ produkt.price }}</td>
+            <td>{{ produkt.quantity }}</td>
+        </tr>
+        {% endfor %}
+    </table><br>
+
     <h3>Aktualny stan magazynowy: </h3>
     <table style="width:80%" align="center">
     <tr>

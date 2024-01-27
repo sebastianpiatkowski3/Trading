@@ -9,6 +9,20 @@ Router:{'cena': 80, 'ilosc': 10}
 Kamera:{'cena': 300, 'ilosc': 5}
 Lampka LED do monitora:{'cena': 189.0, 'ilosc': 10}
 Krzesło:{'cena': 199.0, 'ilosc': 1}
-Biurko:{'cena': '599.00', 'ilosc': 1}
-Zestaw:{'cena': '1000.00', 'ilosc': 6}
-Kurs Python Developer:{'cena': '8000.00', 'ilosc': 1}
+Biurko:{'cena': 599.0, 'ilosc': 1}
+Zestaw:{'cena': 1000.0, 'ilosc': 6}
+Kurs Python Developer:{'cena': 8000.0, 'ilosc': 1}
+co tam :{'cena': 123.0, 'ilosc': 12}
+fxjxfj:{'cena': 1.0, 'ilosc': 1}
+jlhjljlhj:{'cena': 5000.0, 'ilosc': 1}
+qqq:{'cena': 48000.0, 'ilosc': 1}
+Super kod:{'cena': 49999.0, 'ilosc': 1}
+Biuro:{'cena': 89000.0, 'ilosc': 1}
+test A:{'cena': 123.0, 'ilosc': 1}
+test zapisu ceny into db:{'cena': 1.0, 'ilosc': 1}
+myszka:{'cena': '25.00', 'ilosc': 0}
+pierwszy produkt:{'cena': '314.00', 'ilosc': 7}
+pierwszy product:{'cena': '314.00', 'ilosc': 77}
+drugi zakup:{'cena': '223.00', 'ilosc': 1}
+pierwszy zakup:{'cena': '314.00', 'ilosc': 6}
+trzeci zakup:{'cena': '1.00', 'ilosc': 752}
