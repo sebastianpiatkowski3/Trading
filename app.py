@@ -50,7 +50,7 @@ db = SQLAlchemy(app)
 class Inventory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product = db.Column(db.String)
-    price = db.Column(db.Integer)
+    price = db.Column(db.Float)
     quantity = db. Column(db.Integer)
 
     # Relacja z tabelą History
@@ -80,6 +80,10 @@ class History(db.Model):
     # Relacja do tabeli EventType
     event_type = relationship('EventType')
 
+class Saldo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    saldo = db.Column(db.Float)
+    when = db.Column(db.DateTime, server_default=func.now())
 
 """
 Tworzę dodatkową tabelę z definicjami zdarzeń, żeby przechowywać jedynie identyfikator zdarzenia w tabeli History.
@@ -92,7 +96,7 @@ ponieważ definicje zdarzeń są przechowywane tylko w jednym miejscu.
 """
 class EventType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    event_type = db.Column(db.String, unique=True)  # np. 'Zakup', 'Sprzedaż', 'Zmiana Salda'
+    event_type = db.Column(db.String, unique=True)  # np. 'Zakup', 'Sprzedaz', 'Zmiana Salda'
     history_entries = relationship('History' , back_populates = 'event_type')
 
 
@@ -126,17 +130,25 @@ with app.app_context():
     db.create_all()
     db.session.commit()
 
-    # Dodanie definicji zdarzenia (jeśli jeszcze nie istnieje)
+    # # Dodanie definicji zdarzenia (jeśli jeszcze nie istnieje)
     # zdarzenie_zakup = EventType(event_type = 'Zakup')
     # db.session.add(zdarzenie_zakup)
     # db.session.commit()
-    # Dodawanie przykładowych danych do bazy
+    # zdarzenie_sprzedaz = EventType(event_type = 'Sprzedaz')
+    # db.session.add(zdarzenie_sprzedaz)
+    # db.session.commit()
+    # zdarzenie_saldo = EventType(event_type = 'Zmiana_Salda')
+    # db.session.add(zdarzenie_saldo)
+    # db.session.commit()
+
+
+    # # Dodawanie przykładowych danych do bazy
     # for data in sample_data:
     #     inventory_entry = Inventory(**data)
     #     db.session.add(inventory_entry)
-    #
-    # # Commit zmian
-    # db.session.commit()
+    #     # Commit zmian
+    #     db.session.commit()
+
     # Dodaj dane do tabeli Inventory
     # for data in sample_data:
     #     product = Inventory(product = data['product'] , price = data['price'] ,
@@ -167,7 +179,16 @@ with app.app_context():
 @app.route('/')
 def index():
     magazyn_stan = Inventory.query.all()
-    return render_template('index.html', konto=magazyn.module_konto(), magazyn=magazyn_stan, stany=magazyn.inventory)
+    #magazyn_stan = Inventory.query.order_by(Inventory.product).all()  #  Sort this by product name
+    magazyn_stan = sorted(Inventory.query.all() , key = lambda x: x.product.lower())
+
+    # get the last saldo from table Saldo
+    konto = Saldo.query.order_by(Saldo.id.desc()).first()
+    if konto is None:
+        konto = 0
+    else:
+        konto = konto.saldo
+    return render_template('index.html', konto=konto, magazyn=magazyn_stan)
 
 
 @app.route('/zakup', methods=["GET", "POST"])
@@ -195,14 +216,14 @@ def zakup():
                 else:
                     magazyn.saldo = magazyn.saldo - (cena * ilosc)
                     magazyn.inventory[nazwa] = {'cena': f"{cena:.2f}", 'ilosc': ilosc}
-                    cena_sql = cena * 100  # Mnożę cenę przez 100, żeby cena była typu integer, czyli bez groszy(centów)
+                    # cena_sql = cena * 100  # Mnożę cenę przez 100, żeby cena była typu integer, czyli bez groszy(centów)
 
                     """
                     Kiedy tworzę nowy rekord w tabeli History po dokonaniu zakupu,
                     przypisuję konkretny rekord z tabeli Inventory do kolumny inventory:
                     """
                     # Tworzenie nowego rekordu w tabeli Inventory
-                    new_product = Inventory(product=nazwa, price=cena_sql, quantity=ilosc)
+                    new_product = Inventory(product=nazwa, price=cena, quantity=ilosc)
                     db.session.add(new_product)
                     db.session.commit()
 
@@ -227,7 +248,14 @@ def zakup():
                     magazyn.save_data()
                     flash(f"Nowy towar '{nazwa}' został dodany do magazynu.")
 
-    return render_template('zakup.html', konto=magazyn.module_konto())
+    # get the last saldo from table Saldo
+    konto = Saldo.query.order_by(Saldo.id.desc()).first()
+    if konto is None:
+        konto = 0
+    else:
+        konto = konto.saldo
+
+    return render_template('zakup.html', konto=konto)
 
 
 @app.route('/sprzedaz', methods = ["GET", "POST"])
@@ -271,6 +299,12 @@ def sprzedaz():
                 flash("Podano ujemną ilość do sprzedaży.")
         # return redirect("/")  # Przekierowuje do konkretnego widoku wykonując kod z przypisanej funkcji
     magazyn_stan = Inventory.query.all()
+    # get the last saldo from table Saldo
+    konto = Saldo.query.order_by(Saldo.id.desc()).first()
+    if konto is None:
+        konto = 0
+    else:
+        konto = konto.saldo
     return render_template('sprzedaz.html', magazyn_sql=magazyn_stan, magazyn=magazyn.inventory)
 
 
@@ -281,15 +315,35 @@ def saldo():
             try:
                 input_kwota = request.form.get("value")
                 kwota = float(input_kwota)
-                magazyn.saldo += kwota
+
+                # Pobierz ostatnie saldo z tabeli Saldo
+                #  do not Shadow name 'saldo' from outer scope
+
+                saldo_sql = Saldo.query.order_by(Saldo.id.desc()).first()
+
+                if saldo_sql is None:
+                    saldo_sql = Saldo(saldo = kwota)
+                else:
+                    saldo_sql = Saldo(saldo = saldo_sql.saldo + kwota)
+
+                # Dodaj nowy rekord do sesji SQLAlchemy
+                db.session.add(saldo_sql)
+                db.session.commit()
+
+
                 tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN"
                 magazyn.add_operation(tekst)
                 magazyn.save_data()
                 break
             except ValueError:
                 flash("Błąd! Wprowadź prawidłową kwotę.")
-    return render_template('saldo.html',
-                           konto=magazyn.module_konto())
+    # get the last saldo from table Saldo
+    konto = Saldo.query.order_by(Saldo.id.desc()).first()
+    if konto is None:
+        konto = 0
+    else:
+        konto = konto.saldo
+    return render_template('saldo.html', konto=konto)
 
 @app.route('/historia')
 def historia():
@@ -324,6 +378,12 @@ def historia_from_to(historia_from, historia_to):
                 else:
                     print(f"Indeks {i + 1} poza zakresem historii.")
     historia_sql = History.query.all()
+    # get the last saldo from table Saldo
+    konto = Saldo.query.order_by(Saldo.id.desc()).first()
+    if konto is None:
+        konto = 0
+    else:
+        konto = konto.saldo
     return render_template('historia.html', historia_sql=historia_sql,
                            history=historia_to_show)
 

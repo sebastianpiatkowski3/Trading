@@ -26,3 +26,4 @@ pierwszy product:{'cena': '314.00', 'ilosc': 77}
 drugi zakup:{'cena': '223.00', 'ilosc': 1}
 pierwszy zakup:{'cena': '314.00', 'ilosc': 6}
 trzeci zakup:{'cena': '1.00', 'ilosc': 752}
+aaa coś tam:{'cena': '3.00', 'ilosc': 2}
