@@ -93,79 +93,9 @@ class EventType(db.Model):
     history_entries = relationship('History' , back_populates = 'event_type')
 
 
-# Przykładowe dane
-# sample_data = [
-#     {'product': 'Laptop', 'price': 1500, 'quantity': 10},
-#     {'product': 'Monitor', 'price': 300, 'quantity': 20},
-#     {'product': 'Keyboard', 'price': 50, 'quantity': 30},
-#     {'product': 'Mouse', 'price': 20, 'quantity': 40},
-#     {'product': 'Printer', 'price': 200, 'quantity': 15},
-#     {'product': 'External Hard Drive', 'price': 100, 'quantity': 25},
-#     {'product': 'SSD', 'price': 80, 'quantity': 35},
-#     {'product': 'Graphics Card', 'price': 400, 'quantity': 10},
-#     {'product': 'RAM', 'price': 60, 'quantity': 30},
-#     {'product': 'Processor', 'price': 300, 'quantity': 15},
-#     {'product': 'Motherboard', 'price': 150, 'quantity': 20},
-#     {'product': 'Router', 'price': 80, 'quantity': 25},
-#     {'product': 'Webcam', 'price': 30, 'quantity': 40},
-#     {'product': 'Headphones', 'price': 50, 'quantity': 30},
-#     {'product': 'Microphone', 'price': 40, 'quantity': 25},
-#     {'product': 'USB Flash Drive', 'price': 10, 'quantity': 50},
-#     {'product': 'Software License', 'price': 100, 'quantity': 15},
-#     {'product': 'Server', 'price': 1000, 'quantity': 5},
-#     {'product': 'UPS', 'price': 150, 'quantity': 10},
-#     {'product': 'Desk Chair', 'price': 120, 'quantity': 8},
-# ]
-
-
 with app.app_context():
     db.create_all()
     db.session.commit()
-
-    # # Dodanie definicji zdarzenia (jeśli jeszcze nie istnieje)
-    # zdarzenie_zakup = EventType(event_type = 'Zakup')
-    # db.session.add(zdarzenie_zakup)
-    # db.session.commit()
-    # zdarzenie_sprzedaz = EventType(event_type = 'Sprzedaz')
-    # db.session.add(zdarzenie_sprzedaz)
-    # db.session.commit()
-    # zdarzenie_saldo = EventType(event_type = 'Zmiana_Salda')
-    # db.session.add(zdarzenie_saldo)
-    # db.session.commit()
-
-
-    # # Dodawanie przykładowych danych do bazy
-    # for data in sample_data:
-    #     inventory_entry = Inventory(**data)
-    #     db.session.add(inventory_entry)
-    #     # Commit zmian
-    #     db.session.commit()
-
-    # Dodaj dane do tabeli Inventory
-    # for data in sample_data:
-    #     product = Inventory(product = data['product'] , price = data['price'] ,
-    #                         quantity = data['quantity'])
-    #     db.session.add(product)
-    #     db.session.commit()
-    #
-    # # Pobierz przykładowe dane z tabeli EventType
-    # event_type_purchase = EventType.query.filter_by(
-    #     event_type = 'Zakup').first()
-    # event_type_sale = EventType.query.filter_by(event_type = 'Sale').first()
-    # event_type_balance_change = EventType.query.filter_by(
-    #     event_type = 'Balance_Change').first()
-    #
-    # # Dodaj przykładowe zdarzenia do tabeli History
-    # for data in sample_data:
-    #     # Załóżmy, że każde zdarzenie to zakup (możesz dostosować to według potrzeb)
-    #     event_text = f"Zakup: {data['product']}, cena: {data['price']}, ilość: {data['quantity']}"
-    #     event = History(event=event_text, when=datetime.now(), inventory=product, event_type=event_type_purchase)
-    #     db.session.add(event)
-    #     db.session.commit()
-
-        # Załóżmy, że istnieją także sprzedaże i zmiany salda (możesz dostosować to według potrzeb)
-        # Dodaj odpowiednie zdarzenia i dostosuj event_type
-        # ...
 
 
 def zapisz_saldo(kwota, powod, tekst):
