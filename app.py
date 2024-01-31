@@ -42,7 +42,6 @@ app.config["SECRET_KEY"] = "Tajny klucz"  # Klucz prywatny aplikacji dla celów 
 uzytkownicy = {}
 rejestr = []
 magazyn = Magazyn()
-magazyn.load_data()
 
 db = SQLAlchemy(app)
 
@@ -175,6 +174,24 @@ with app.app_context():
         # Dodaj odpowiednie zdarzenia i dostosuj event_type
         # ...
 
+def zapisz_saldo(kwota, tekst):
+    saldo_sql = Saldo.query.order_by(Saldo.id.desc()).first()
+
+    if saldo_sql is None:
+        saldo_sql = Saldo(saldo = kwota)
+    else:
+        saldo_sql = Saldo(saldo = saldo_sql.saldo + kwota)
+
+    # Dodaj nowy rekord do sesji SQLAlchemy
+    db.session.add(saldo_sql)
+    db.session.commit()
+
+    # Tworzenie nowego rekordu w tabeli History z powiązanym zakupem
+    event_type_zakup = EventType.query.filter_by(event_type = 'Zmiana_Salda').first()
+    history = History(event = tekst , event_type = event_type_zakup ,
+                      inventory = '')
+    db.session.add(history)
+    db.session.commit()
 
 @app.route('/')
 def index():
@@ -194,9 +211,9 @@ def index():
 @app.route('/zakup', methods=["GET", "POST"])
 def zakup():
     if request.form:
+        konto = Saldo.query.order_by(Saldo.id.desc()).first()
+        magazyn_saldo = konto.saldo
         nazwa = request.form.get("productNameBuy")
-        if nazwa in magazyn.inventory:
-            flash(f"Towar o nazwie '{nazwa}' już istnieje w magazynie.")
         cena_input = request.form.get("unitPriceBuy")
         cena = float(cena_input)
         if cena < 0:
@@ -206,18 +223,45 @@ def zakup():
             ilosc = int(ilosc_input)
             if ilosc < 0:
                 flash("Podano ilość mniejszą od 0.")
-            elif cena * ilosc > magazyn.saldo:
+            elif cena * ilosc > magazyn_saldo:
                 flash("Za mały stan konta. Dodaj środki.")
                 flash("Nie dodano do magazynu.")
                 flash("*" * 35)
             else:
-                if nazwa in magazyn.inventory:
-                    ilosc += magazyn.inventory[nazwa]['ilosc']
-                else:
-                    magazyn.saldo = magazyn.saldo - (cena * ilosc)
-                    magazyn.inventory[nazwa] = {'cena': f"{cena:.2f}", 'ilosc': ilosc}
-                    # cena_sql = cena * 100  # Mnożę cenę przez 100, żeby cena była typu integer, czyli bez groszy(centów)
+                #   Check if product name already exists in database (in table Inventory in column product
+                if Inventory.query.filter_by(product = nazwa).first():
+                    flash(f"Towar o nazwie '{nazwa}' już istnieje w magazynie.")
+                    #  Change quantity in Inventory table for existing product to quantity+=ilosc
+                    produkt = Inventory.query.filter_by(product = nazwa).first()
+                    produkt.quantity += ilosc
+                    db.session.commit()
+                    """
+                    Wygląda na to, że w Twoim kodzie występuje błąd. Komunikat o błędzie wskazuje, że próbujesz uzyskać dostęp do atrybutu o nazwie `_sa_instance_state` na obiekcie typu `str`, co nie jest możliwe. Ten błąd często występuje podczas korzystania z SQLAlchemy w Pythonie.
 
+Na podstawie Twojego kodu wydaje się, że problem dotyczy funkcji `zakup` w Twojej aplikacji Flask. Funkcja próbuje utworzyć nowy obiekt `History` z atrybutami `event`, `event_type_zakup` i `inventory`, ale atrybut `inventory` jest obiektem typu `str`, a nie instancją klasy `Inventory`.
+
+Aby naprawić ten błąd, upewnij się, że atrybut `inventory` jest instancją klasy `Inventory` przed przekazaniem go do konstruktora `History`. Możesz również sprawdzić, czy atrybuty `event` i `event_type_zakup` są poprawnie ustawione.
+
+    produkt = Inventory.query.filter_by(product=nazwa).first()
+    history = History(event=tekst, event_type=event_type_zakup, inventory=produkt)
+W powyższym kodzie `produkt` jest obiektem typu `Inventory`, który jest przekazywany do konstruktora `History` jako atrybut `inventory`.    
+
+...a było:
+    nazwa = request.form.get("productNameBuy")
+    history = History(event=tekst, event_type=event_type_zakup, inventory=nazwa)
+    
+Powyższy kod pobiera pierwszy rekord z tabeli `Inventory`, który ma wartość `product` równą `nazwa`. Następnie aktualizuje wartość atrybutu `quantity` o wartość `ilosc`. Na końcu tworzy nowy obiekt `History` z atrybutami `event`, `event_type_zakup` i `inventory` i zapisuje go w bazie danych za pomocą metody `commit()`.
+"""
+                    event_type_zakup = EventType.query.filter_by(
+                        event_type = 'Zakup').first()
+                    tekst = f"Zakup istniejącego w bazie towaru: {nazwa}, cena: {produkt.price:.2f} PLN, ilość: {ilosc}."
+                    history = History(event = tekst ,
+                                      event_type = event_type_zakup ,
+                                      inventory = produkt)
+                    db.session.add(history)
+                    db.session.commit()
+
+                else:
                     """
                     Kiedy tworzę nowy rekord w tabeli History po dokonaniu zakupu,
                     przypisuję konkretny rekord z tabeli Inventory do kolumny inventory:
@@ -244,8 +288,9 @@ def zakup():
                     db.session.add(history)
                     db.session.commit()
 
-                    magazyn.add_operation(tekst)
-                    magazyn.save_data()
+                    magazyn_saldo = magazyn_saldo - (cena * ilosc)
+                    # zapisz_saldo(magazyn_saldo, tekst)  # Zapisanie salda do bazy danych
+
                     flash(f"Nowy towar '{nazwa}' został dodany do magazynu.")
 
     # get the last saldo from table Saldo
@@ -332,8 +377,7 @@ def saldo():
 
 
                 tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN"
-                magazyn.add_operation(tekst)
-                magazyn.save_data()
+
                 break
             except ValueError:
                 flash("Błąd! Wprowadź prawidłową kwotę.")
@@ -347,7 +391,8 @@ def saldo():
 
 @app.route('/historia')
 def historia():
-    return render_template('historia.html', history=magazyn.module_przeglad())
+    przeglad_historia = History.query.all()
+    return render_template('historia.html', history=przeglad_historia)
 
 @app.route('/historia/<int:historia_from>/<int:historia_to>')
 def historia_from_to(historia_from, historia_to):

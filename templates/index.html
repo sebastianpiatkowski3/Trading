@@ -16,9 +16,9 @@
         </tr>
         {% for produkt in magazyn %}
         <tr>
-            <td>{{ produkt.id }}</td>
+            <td>{{ loop.index }}</td>
             <td>{{ produkt.product }}</td>
-            <td>{{ produkt.price }}</td>
+            <td>{{ produkt.price }} zł</td>
             <td>{{ produkt.quantity }}</td>
         </tr>
         {% endfor %}
