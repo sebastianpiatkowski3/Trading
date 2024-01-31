@@ -175,22 +175,15 @@ with app.app_context():
         # ...
 
 def zapisz_saldo(kwota, tekst):
-    saldo_sql = Saldo.query.order_by(Saldo.id.desc()).first()
+    # Dodanie nowego rekordu do tabeli Saldo
+    nowe_saldo = Saldo(saldo=kwota)
+    db.session.add(nowe_saldo)
 
-    if saldo_sql is None:
-        saldo_sql = Saldo(saldo = kwota)
-    else:
-        saldo_sql = Saldo(saldo = saldo_sql.saldo + kwota)
-
-    # Dodaj nowy rekord do sesji SQLAlchemy
-    db.session.add(saldo_sql)
-    db.session.commit()
-
-    # Tworzenie nowego rekordu w tabeli History z powiązanym zakupem
-    event_type_zakup = EventType.query.filter_by(event_type = 'Zmiana_Salda').first()
-    history = History(event = tekst , event_type = event_type_zakup ,
-                      inventory = '')
-    db.session.add(history)
+    tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN z powodu zakupu towaru: {tekst}"
+    # Dodanie nowego rekordu do tabeli History
+    event_type_zmiana_saldo = EventType.query.filter_by(event_type='Zmiana Salda').first()
+    nowe_wydarzenie = History(event=tekst, event_type=event_type_zmiana_saldo)
+    db.session.add(nowe_wydarzenie)
     db.session.commit()
 
 @app.route('/')
@@ -211,8 +204,10 @@ def index():
 @app.route('/zakup', methods=["GET", "POST"])
 def zakup():
     if request.form:
+
         konto = Saldo.query.order_by(Saldo.id.desc()).first()
         magazyn_saldo = konto.saldo
+
         nazwa = request.form.get("productNameBuy")
         cena_input = request.form.get("unitPriceBuy")
         cena = float(cena_input)
@@ -235,6 +230,9 @@ def zakup():
                     produkt = Inventory.query.filter_by(product = nazwa).first()
                     produkt.quantity += ilosc
                     db.session.commit()
+
+
+
                     """
                     Wygląda na to, że w Twoim kodzie występuje błąd. Komunikat o błędzie wskazuje, że próbujesz uzyskać dostęp do atrybutu o nazwie `_sa_instance_state` na obiekcie typu `str`, co nie jest możliwe. Ten błąd często występuje podczas korzystania z SQLAlchemy w Pythonie.
 
@@ -288,8 +286,9 @@ Powyższy kod pobiera pierwszy rekord z tabeli `Inventory`, który ma wartość 
                     db.session.add(history)
                     db.session.commit()
 
+
                     magazyn_saldo = magazyn_saldo - (cena * ilosc)
-                    # zapisz_saldo(magazyn_saldo, tekst)  # Zapisanie salda do bazy danych
+                    zapisz_saldo(magazyn_saldo, nazwa)  # Zapisanie salda do bazy danych
 
                     flash(f"Nowy towar '{nazwa}' został dodany do magazynu.")
 
