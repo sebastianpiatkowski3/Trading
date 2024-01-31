@@ -174,12 +174,18 @@ with app.app_context():
         # Dodaj odpowiednie zdarzenia i dostosuj event_type
         # ...
 
-def zapisz_saldo(kwota, tekst):
+def zapisz_saldo(kwota, powod, tekst):
     # Dodanie nowego rekordu do tabeli Saldo
     nowe_saldo = Saldo(saldo=kwota)
     db.session.add(nowe_saldo)
 
-    tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN z powodu zakupu towaru: {tekst}"
+    if powod == 1:
+        tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN z powodu zakupu towaru: {tekst}"
+    elif powod == 2:
+        tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN z powodu sprzedaży towaru: {tekst}"
+    elif powod == 3:
+        tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN"
+
     # Dodanie nowego rekordu do tabeli History
     event_type_zmiana_saldo = EventType.query.filter_by(event_type='Zmiana Salda').first()
     nowe_wydarzenie = History(event=tekst, event_type=event_type_zmiana_saldo)
@@ -288,7 +294,8 @@ Powyższy kod pobiera pierwszy rekord z tabeli `Inventory`, który ma wartość 
 
 
                     magazyn_saldo = magazyn_saldo - (cena * ilosc)
-                    zapisz_saldo(magazyn_saldo, nazwa)  # Zapisanie salda do bazy danych
+                    powod = 1  # 1 - zakup
+                    zapisz_saldo(magazyn_saldo, powod, nazwa)  # Zapisanie salda do bazy danych
 
                     flash(f"Nowy towar '{nazwa}' został dodany do magazynu.")
 
@@ -312,33 +319,31 @@ def sprzedaz():
         else:
             ilosc_sprzedaz = int(quantitySell)
             if ilosc_sprzedaz > 0:
-                stan_magazynowy = magazyn.inventory[productNameSell]['ilosc']
+                # stan_magazynowy = magazyn.inventory[productNameSell]['ilosc']
+                stan_magazynowy = Inventory.query.filter_by(product = productNameSell).first().quantity
                 if stan_magazynowy < ilosc_sprzedaz:
                     flash(f"Za mały stan magazynowy. Możesz sprzedać max.: {stan_magazynowy} szt.")
                 else:
                     stan_magazynowy -= ilosc_sprzedaz
-                    magazyn.inventory[productNameSell]['ilosc'] = stan_magazynowy
-                    magazyn.saldo -= (ilosc_sprzedaz * float(magazyn.inventory[productNameSell]['cena']))
 
                     # Znajdź produkt w magazynie
                     produkt = Inventory.query.filter_by(product = productNameSell).first()
-
                     if produkt:
                         # Aktualizuj stan magazynowy (zmniejsz ilość)
                         produkt.quantity -= ilosc_sprzedaz
                         db.session.commit()
 
-                    # Sprawdź, czy istnieje rekord w tabeli EventType o nazwie 'Zakup'
-                    event_type = EventType.query.filter_by(event_type = 'Sale').first()
-                    tekst = f"Sprzedaż: {productNameSell}, ilość: {ilosc_sprzedaz} szt."
-                    # Tworzenie nowego rekordu w tabeli History z powiązanym zakupem
-                    history = History(event=tekst, event_type=event_type, inventory=produkt)
-                    db.session.add(history)
-                    db.session.commit()
+                        zapisz_saldo(-produkt.price * ilosc_sprzedaz, 2, productNameSell)  # Zapisanie salda do bazy danych
 
-                    magazyn.add_operation(tekst)
-                    magazyn.save_data()
-                    flash(f"Sprzedano: {productNameSell}, {quantitySell} szt.")
+                        # Sprawdź, czy istnieje rekord w tabeli EventType o nazwie 'Zakup'
+                        event_type = EventType.query.filter_by(event_type = 'Sale').first()
+                        tekst = f"Sprzedaż: {productNameSell}, ilość: {ilosc_sprzedaz} szt."
+                        # Tworzenie nowego rekordu w tabeli History z powiązanym zakupem
+                        history = History(event=tekst, event_type=event_type, inventory=produkt)
+                        db.session.add(history)
+                        db.session.commit()
+
+                        flash(f"Sprzedano: {productNameSell}, {quantitySell} szt.")
             else:
                 flash("Podano ujemną ilość do sprzedaży.")
         # return redirect("/")  # Przekierowuje do konkretnego widoku wykonując kod z przypisanej funkcji
@@ -375,7 +380,10 @@ def saldo():
                 db.session.commit()
 
 
-                tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN"
+                tekst = ''
+                magazyn_saldo = saldo_sql.saldo + kwota
+                powod = 3  # 3 - zmiana salda
+                zapisz_saldo(magazyn_saldo , powod, tekst)  # Zapisanie salda do bazy danych
 
                 break
             except ValueError:
