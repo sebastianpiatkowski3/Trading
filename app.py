@@ -25,11 +25,6 @@ Zapewnij przyjazny dla użytkownika interfejs, stosując style CSS.
 from flask import Flask, render_template, request, flash, redirect, g
 from sqlalchemy import func , ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from sqlalchemy.orm import sessionmaker
-
-from magazyn import Magazyn
-import sqlite3
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -38,10 +33,6 @@ app_info = {
 }
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///accountant.db'
 app.config["SECRET_KEY"] = "Tajny klucz"  # Klucz prywatny aplikacji dla celów m.in. bezpieczeństwa
-
-uzytkownicy = {}
-rejestr = []
-magazyn = Magazyn()
 
 db = SQLAlchemy(app)
 
@@ -79,6 +70,7 @@ class History(db.Model):
     # Relacja do tabeli EventType
     event_type = relationship('EventType')
 
+
 class Saldo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     saldo = db.Column(db.Float)
@@ -93,6 +85,8 @@ To podejście pozwala na bardziej elastyczne zarządzanie rodzajami zdarzeń,
 a także ułatwia utrzymanie spójności danych,
 ponieważ definicje zdarzeń są przechowywane tylko w jednym miejscu.
 """
+
+
 class EventType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     event_type = db.Column(db.String, unique=True)  # np. 'Zakup', 'Sprzedaz', 'Zmiana Salda'
@@ -100,29 +94,28 @@ class EventType(db.Model):
 
 
 # Przykładowe dane
-sample_data = [
-    {'product': 'Laptop', 'price': 1500, 'quantity': 10},
-    {'product': 'Monitor', 'price': 300, 'quantity': 20},
-    {'product': 'Keyboard', 'price': 50, 'quantity': 30},
-    {'product': 'Mouse', 'price': 20, 'quantity': 40},
-    {'product': 'Printer', 'price': 200, 'quantity': 15},
-    {'product': 'External Hard Drive', 'price': 100, 'quantity': 25},
-    {'product': 'SSD', 'price': 80, 'quantity': 35},
-    {'product': 'Graphics Card', 'price': 400, 'quantity': 10},
-    {'product': 'RAM', 'price': 60, 'quantity': 30},
-    {'product': 'Processor', 'price': 300, 'quantity': 15},
-    {'product': 'Motherboard', 'price': 150, 'quantity': 20},
-    {'product': 'Router', 'price': 80, 'quantity': 25},
-    {'product': 'Webcam', 'price': 30, 'quantity': 40},
-    {'product': 'Headphones', 'price': 50, 'quantity': 30},
-    {'product': 'Microphone', 'price': 40, 'quantity': 25},
-    {'product': 'USB Flash Drive', 'price': 10, 'quantity': 50},
-    {'product': 'Software License', 'price': 100, 'quantity': 15},
-    {'product': 'Server', 'price': 1000, 'quantity': 5},
-    {'product': 'UPS', 'price': 150, 'quantity': 10},
-    {'product': 'Desk Chair', 'price': 120, 'quantity': 8},
-]
-
+# sample_data = [
+#     {'product': 'Laptop', 'price': 1500, 'quantity': 10},
+#     {'product': 'Monitor', 'price': 300, 'quantity': 20},
+#     {'product': 'Keyboard', 'price': 50, 'quantity': 30},
+#     {'product': 'Mouse', 'price': 20, 'quantity': 40},
+#     {'product': 'Printer', 'price': 200, 'quantity': 15},
+#     {'product': 'External Hard Drive', 'price': 100, 'quantity': 25},
+#     {'product': 'SSD', 'price': 80, 'quantity': 35},
+#     {'product': 'Graphics Card', 'price': 400, 'quantity': 10},
+#     {'product': 'RAM', 'price': 60, 'quantity': 30},
+#     {'product': 'Processor', 'price': 300, 'quantity': 15},
+#     {'product': 'Motherboard', 'price': 150, 'quantity': 20},
+#     {'product': 'Router', 'price': 80, 'quantity': 25},
+#     {'product': 'Webcam', 'price': 30, 'quantity': 40},
+#     {'product': 'Headphones', 'price': 50, 'quantity': 30},
+#     {'product': 'Microphone', 'price': 40, 'quantity': 25},
+#     {'product': 'USB Flash Drive', 'price': 10, 'quantity': 50},
+#     {'product': 'Software License', 'price': 100, 'quantity': 15},
+#     {'product': 'Server', 'price': 1000, 'quantity': 5},
+#     {'product': 'UPS', 'price': 150, 'quantity': 10},
+#     {'product': 'Desk Chair', 'price': 120, 'quantity': 8},
+# ]
 
 
 with app.app_context():
@@ -174,6 +167,7 @@ with app.app_context():
         # Dodaj odpowiednie zdarzenia i dostosuj event_type
         # ...
 
+
 def zapisz_saldo(kwota, powod, tekst):
     # Pobierz ostatnie saldo z tabeli Saldo
     saldo_sql = Saldo.query.order_by(Saldo.id.desc()).first()
@@ -183,11 +177,11 @@ def zapisz_saldo(kwota, powod, tekst):
     db.session.add(nowe_saldo)
     db.session.commit()
 
-    if powod == 1:
+    if powod == 1:  # 1 - zakup
         tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN z powodu zakupu towaru: {tekst}"
-    elif powod == 2:
+    elif powod == 2:  # 2 - sprzedaż
         tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN z powodu sprzedaży towaru: {tekst}"
-    elif powod == 3:
+    elif powod == 3:  # 3 - zmiana salda
         tekst = f"Zmieniono saldo o kwotę: {kwota:.2F} PLN"
 
     # Dodanie nowego rekordu do tabeli History
@@ -196,25 +190,19 @@ def zapisz_saldo(kwota, powod, tekst):
     db.session.add(nowe_wydarzenie)
     db.session.commit()
 
+
 @app.route('/')
 def index():
-    magazyn_stan = Inventory.query.all()
-    #magazyn_stan = Inventory.query.order_by(Inventory.product).all()  #  Sort this by product name
     magazyn_stan = sorted(Inventory.query.all() , key = lambda x: x.product.lower())
-
     # get the last saldo from table Saldo
     konto = Saldo.query.order_by(Saldo.id.desc()).first()
-    if konto is None:
-        konto = 0
-    else:
-        konto = konto.saldo
+    konto = konto.saldo
     return render_template('index.html', konto=konto, magazyn=magazyn_stan)
 
 
 @app.route('/zakup', methods=["GET", "POST"])
 def zakup():
     if request.form:
-
         konto = Saldo.query.order_by(Saldo.id.desc()).first()
         magazyn_saldo = konto.saldo
 
@@ -241,33 +229,33 @@ def zakup():
                     produkt.quantity += ilosc
                     db.session.commit()
 
-
-
                     """
                     Wygląda na to, że w Twoim kodzie występuje błąd. Komunikat o błędzie wskazuje, że próbujesz uzyskać dostęp do atrybutu o nazwie `_sa_instance_state` na obiekcie typu `str`, co nie jest możliwe. Ten błąd często występuje podczas korzystania z SQLAlchemy w Pythonie.
-
 Na podstawie Twojego kodu wydaje się, że problem dotyczy funkcji `zakup` w Twojej aplikacji Flask. Funkcja próbuje utworzyć nowy obiekt `History` z atrybutami `event`, `event_type_zakup` i `inventory`, ale atrybut `inventory` jest obiektem typu `str`, a nie instancją klasy `Inventory`.
-
 Aby naprawić ten błąd, upewnij się, że atrybut `inventory` jest instancją klasy `Inventory` przed przekazaniem go do konstruktora `History`. Możesz również sprawdzić, czy atrybuty `event` i `event_type_zakup` są poprawnie ustawione.
 
     produkt = Inventory.query.filter_by(product=nazwa).first()
     history = History(event=tekst, event_type=event_type_zakup, inventory=produkt)
+                                                                                                                                                           ^^^^^^^
 W powyższym kodzie `produkt` jest obiektem typu `Inventory`, który jest przekazywany do konstruktora `History` jako atrybut `inventory`.    
 
 ...a było:
     nazwa = request.form.get("productNameBuy")
     history = History(event=tekst, event_type=event_type_zakup, inventory=nazwa)
-    
+                                                                                                                                                            ^^^^^
 Powyższy kod pobiera pierwszy rekord z tabeli `Inventory`, który ma wartość `product` równą `nazwa`. Następnie aktualizuje wartość atrybutu `quantity` o wartość `ilosc`. Na końcu tworzy nowy obiekt `History` z atrybutami `event`, `event_type_zakup` i `inventory` i zapisuje go w bazie danych za pomocą metody `commit()`.
 """
-                    event_type_zakup = EventType.query.filter_by(
-                        event_type = 'Zakup').first()
+                    event_type_zakup = EventType.query.filter_by(event_type = 'Zakup').first()
                     tekst = f"Zakup istniejącego w bazie towaru: {nazwa}, cena: {produkt.price:.2f} PLN, ilość: {ilosc}."
                     history = History(event = tekst ,
                                       event_type = event_type_zakup ,
                                       inventory = produkt)
                     db.session.add(history)
                     db.session.commit()
+
+                    kwota = - cena * ilosc
+                    powod = 1  # 1 - zakup
+                    zapisz_saldo(kwota, powod, nazwa)  # Zapisanie salda do bazy danych
 
                 else:
                     """
@@ -296,7 +284,6 @@ Powyższy kod pobiera pierwszy rekord z tabeli `Inventory`, który ma wartość 
                     db.session.add(history)
                     db.session.commit()
 
-
                     kwota = - cena * ilosc
                     powod = 1  # 1 - zakup
                     zapisz_saldo(kwota, powod, nazwa)  # Zapisanie salda do bazy danych
@@ -305,11 +292,7 @@ Powyższy kod pobiera pierwszy rekord z tabeli `Inventory`, który ma wartość 
 
     # get the last saldo from table Saldo
     konto = Saldo.query.order_by(Saldo.id.desc()).first()
-    if konto is None:
-        konto = 0
-    else:
-        konto = konto.saldo
-
+    konto = konto.saldo
     return render_template('zakup.html', konto=konto)
 
 
@@ -345,14 +328,11 @@ def sprzedaz():
                     flash(f"Sprzedano: {productNameSell}, {quantitySell} szt.")
             else:
                 flash("Podano ujemną ilość do sprzedaży.")
-        # return redirect("/")  # Przekierowuje do konkretnego widoku wykonując kod z przypisanej funkcji
+
     magazyn_stan = Inventory.query.all()
     # get the last saldo from table Saldo
     konto = Saldo.query.order_by(Saldo.id.desc()).first()
-    if konto is None:
-        konto = 0
-    else:
-        konto = konto.saldo
+    konto = konto.saldo
     return render_template('sprzedaz.html', magazyn_sql=magazyn_stan, konto=konto)
 
 
@@ -366,7 +346,7 @@ def saldo():
 
                 tekst = ''
                 powod = 3  # 3 - zmiana salda
-                zapisz_saldo(kwota , powod, tekst)  # Zapisanie salda do bazy danych
+                zapisz_saldo(kwota, powod, tekst)  # Zapisanie salda do bazy danych
 
                 break
             except ValueError:
@@ -374,21 +354,22 @@ def saldo():
 
     # get the last saldo from table Saldo
     konto = Saldo.query.order_by(Saldo.id.desc()).first()
-    if konto is None:
-        konto = 0
-    else:
-        konto = konto.saldo
+    konto = konto.saldo
     return render_template('saldo.html', konto=konto)
+
 
 @app.route('/historia')
 def historia():
     przeglad_historia = History.query.all()
     return render_template('historia.html', history=przeglad_historia)
 
+
 @app.route('/historia/<int:historia_from>/<int:historia_to>')
 def historia_from_to(historia_from, historia_to):
     historia_to_show = []
-    if len(magazyn.history) == 0:
+    #   count number of records in table History
+    result = History.query.count()
+    if result == 0:
         flash("Brak operacji w historii.")
     elif historia_from > 0:
         od = historia_from - 1
@@ -399,43 +380,22 @@ def historia_from_to(historia_from, historia_to):
         else:
             od = int(od)
         if not do:
-            do = len(magazyn.history)
+            do = result
         else:
             do = int(do)
         # Sprawdzanie zakresu
-        if od < 0 or do > len(magazyn.history) or od > do:
-            flash(f"Błędny zakres. Dostępne indeksy od 1 do {len(magazyn.history)}")
+        if od < 0 or do > result or od > do:
+            flash(f"Błędny zakres. Dostępne indeksy od 1 do {result}")
             flash("Użyj notacji: /historia/<start>/<koniec>")
         else:
             # Wyświetlanie akcji w wybranym zakresie
-            for i in range(od, do):
-                if 0 <= i < len(magazyn.history):
-                    historia_to_show.append(magazyn.history[i])
-                else:
-                    print(f"Indeks {i + 1} poza zakresem historii.")
-    historia_sql = History.query.all()
-    # get the last saldo from table Saldo
-    konto = Saldo.query.order_by(Saldo.id.desc()).first()
-    if konto is None:
-        konto = 0
-    else:
-        konto = konto.saldo
-    return render_template('historia.html', historia_sql=historia_sql,
-                           history=historia_to_show)
+            historia_to_show = History.query.slice(od, do).all()
+    return render_template('historia.html', history=historia_to_show)
 
 @app.route('/about')
 def about():
     return render_template('about.html')
 
-def zapisanie_danych_do_plikow():
-    magazyn.save_data()
-
-
-# atexit.register(zapisanie_danych_do_plikow)
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-def config():
-    return None

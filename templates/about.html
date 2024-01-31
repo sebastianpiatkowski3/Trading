@@ -8,7 +8,7 @@
         <h3>O programie: System Accountant</h3>
     </header>
     <main>
-        <section
+        <section>
             <p>Program wykonany jako: "Projekty strony głównej i podstron dla systemu accountant" w ramach kursu 'Python developer' prowadzonego przez Future Collars.</p>
             <h4>Treść zadania:</h4>
             <p>Bazując na aplikacji do zarządzania firmą, stwórz jej webowy odpowiednik.</p>
@@ -20,12 +20,16 @@
             <p>W przypadku "/historia/" na stronie ma się pojawić cała dostępna historia.<br>
             W przypadku "/historia/&lt;start&gt;/&lt;koniec&gt;" zależnie od podanych wartości w &lt;start&gt; i &lt;koniec&gt;, mają się pojawić wskazane linie, np. od 3 do 12. W przypadku podania złego (lub nieistniejącego zakresu indeksów), program poinformuje o tym użytkownika i wyświetli możliwy do wybrania zakres historii.<br>
             Zadanie wciąż powinno korzystać z plików do przechowywania stanu konta, magazynu i historii.</p>
+            <p> Dane przechowuję w bazie danych 'db'. W tym celu używam Flask-SQLAlchemy, który automatycznie zarządza sesją.
+                Flask-SQLAlchemy jest rozszerzeniem, które ułatwia integrację SQLAlchemy z aplikacją Flask.
+                Nie trzeba  tworzyć ani zamykać sesji ręcznie, ponieważ Flask-SQLAlchemy robi to za mnie w tle.
+                Mogę uzyskać dostęp do bieżącej sesji za pomocą atrybutu session obiektu db, który jest instancją klasy SQLAlchemy</p>
         </section>
     </main>
     <footer>
         <p>Autor: Sebastian Piątkowski</p>
         <p>Email: <a href="mailto:sebastianpiatkowski32@gmail.com">sebastianpiatkowski32@gmail.com</a></p>
-        <p>Github: <a href="https://github.com/sebastianpiatkowski3/Zadania_Future_Collars">System Accountant</a></p>
+        <p>GitHub: <a href="https://github.com/sebastianpiatkowski3/Zadania_Future_Collars">System Accountant</a></p>
     </footer>
 
 {% endblock %}}
